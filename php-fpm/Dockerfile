@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:8.1-fpm
 
 ARG WEB_USER
 ARG WEB_GROUP
@@ -8,9 +8,11 @@ COPY www.conf ${PHP_ROOT_DIR}/php-fpm.d/www.conf
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
-EXPOSE ${PHP_LISTENING_PORT}
+#EXPOSE 80
+#EXPOSE 443
+EXPOSE 9000
 
-#RUN apt-get update \
+RUN apt-get update
 #    && apt-get -y --no-install-recommends install  php7.4-mysql php7.4-intl php7.4-mbstring php7.4-sqlite3\
 #    && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
@@ -21,6 +23,7 @@ RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
     bcmath \
     bz2 \
     curl \
+    dom \
     fileinfo \
     gd \
     intl \
@@ -35,15 +38,12 @@ RUN docker-php-ext-install mysqli
 
 RUN install-php-extensions @composer
 
-# Temporarily disabled because some error was preventing this from working
-# (or at least working at the same time another site's containers were running)
-#RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN pecl install xdebug
+# && docker-php-ext-enable xdebug
 
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash
 
-RUN apt-get install nodejs
-
-RUN npm install -g grunt
+RUN apt-get install nodejs -y
 
 WORKDIR "/var/www/html/webroot"
 
