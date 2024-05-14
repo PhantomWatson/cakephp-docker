@@ -8,7 +8,7 @@ COPY www.conf ${PHP_ROOT_DIR}/php-fpm.d/www.conf
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
-EXPOSE 9000
+EXPOSE ${APACHE_EXPOSED_PORT}
 
 RUN apt-get update
 
